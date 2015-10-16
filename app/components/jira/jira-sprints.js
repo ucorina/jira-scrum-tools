@@ -1,12 +1,12 @@
 angular.module('jiraScrumTools.jira.sprints', [])
 
     .factory('jiraSprints', [
-        '$resource', 'CONFIG',
-        function ($resource, CONFIG) {
+        '$resource', 'CONFIG', 'Sprint',
+        function ($resource, CONFIG, Sprint) {
 
             var params = {};
             var url = CONFIG.BASE_URL + 'rest/greenhopper/latest/xboard/work/allData.json';
-            var res = $resource(
+            var Resource = $resource(
                 url, params,
                 {
                     getSingle: {
@@ -15,9 +15,11 @@ angular.module('jiraScrumTools.jira.sprints', [])
                 }
             );
 
+            angular.extend(Resource.prototype, Sprint);
+
             return {
                 getSingle: function (p) {
-                    return res.getSingle(p).$promise;
+                    return Resource.getSingle(p).$promise;
                 }
             };
         }

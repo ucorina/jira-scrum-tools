@@ -4,6 +4,7 @@
             Show
             <select ng-model="issueType" ng-options="issue as issue.name for issue in project.issuetypes"></select>
             <select ng-model="issueState" ng-options="state as state.name for state in states"></select>
+            <span class="pull-right">{{sprint.getTotal()}}</span>
         </h5>
         <ul class="list-group">
             <li class="list-group-item"
@@ -20,15 +21,15 @@
         <ul class="list-group">
             <li class="list-group-item list-group-item-info">
                 Total number of points this sprint:
-                <span class="pull-right">{{getTotal()}}</span>
+                <span class="pull-right">{{sprint.getTotal()}}</span>
             </li>
             <li class="list-group-item list-group-item-success">
                 Number of points achieved:
-                <span class="pull-right">{{getTotal('Closed')}}</span>
+                <span class="pull-right">{{sprint.getTotal('Closed')}}</span>
             </li>
             <li class="list-group-item list-group-item-danger">
                 Number of points for next sprint:
-                <span class="pull-right">{{getTotal() - getTotal('Closed')}}</span>
+                <span class="pull-right">{{sprint.getTotal() - sprint.getTotal('Closed')}}</span>
             </li>
         </ul>
         <table class="table">
@@ -36,7 +37,7 @@
                 <td width="50%" class="danger">
                     <p>Estimation error:</p>
 
-                    <h2>{{(getTotal() - getTotal('Closed'))/getTotal()*100|number:0}}%</h2>
+                    <h2>{{(sprint.getTotal() - sprint.getTotal('Closed'))/sprint.getTotal()*100|number:0}}%</h2>
                 </td>
                 <td width="50%">
                     <p>Estimation error goal:</p>
@@ -49,7 +50,7 @@
 
         <div class="progress">
             <progressbar animate="false" value="getTotal('Closed')/getTotal()*100" type="{{achievement}}">
-                <b>{{getTotal('Closed')/getTotal()*100|number:0}}%</b>
+                <b>{{sprint.getTotal('Closed')/sprint.getTotal()*100|number:0}}%</b>
             </progressbar>
         </div>
         <hr/>
