@@ -1,8 +1,8 @@
 angular.module('jiraScrumTools.jira.projects', [])
 
     .factory('jiraProjects', [
-        '$resource', 'CONFIG',
-        function ($resource, CONFIG) {
+        '$resource', 'CONFIG', '$q',
+        function ($resource, CONFIG, $q) {
 
             var params = {};
             var url = CONFIG.BASE_URL + 'rest/api/2/project/:id/:resource';
@@ -23,6 +23,18 @@ angular.module('jiraScrumTools.jira.projects', [])
             return {
                 get: function (p) {
                     return res.get(p).$promise;
+                },
+
+                getStatuses: function(projectId) {
+                    var deferred = $q.defer();
+                    res.get({id: projectId, resource: 'statuses'}).$promise.then(
+                        function (response) {
+                            var states = response[0].statuses;
+                            states.unshift({name:'All'});
+                            deferred.resolve(states);
+                        }
+                    );
+                    return deferred.promise;
                 }
             };
         }

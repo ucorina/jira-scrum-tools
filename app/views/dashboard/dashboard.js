@@ -24,7 +24,7 @@ angular.module('jiraScrumTools.dashboard', ['ngRoute'])
             $scope.issueType = null;
 
             // TO DO: make this configurable
-            var projectId = 88;
+            var rapidViewId = 88;
             var projectName = 'Simpled Cards';
             var activeSprint = undefined;
             var timer = null;
@@ -39,57 +39,22 @@ angular.module('jiraScrumTools.dashboard', ['ngRoute'])
 
                 $scope.timer = 900;
 
-                jiraIssues.get({sub: 'createmeta'}).then(
-                    function(response){
-                        if (response.projects) {
-                            for (var i in response.projects) {
-                                if (response.projects[i].name == projectName) {
-                                    $scope.project = response.projects[i];
-                                    $scope.project.issuetypes.unshift({name: 'All'});
-                                    $scope.issueType = $scope.project.issuetypes[0];
-                                }
-                            }
+                jiraIssues.getProject(projectName).then(function(project) {
+                    $scope.project = project;
+                    $scope.issueType = project.issuetypes[0];
 
-                            if (!$scope.project) {
-                                alert('Project ' + projectName + ' was not found!')
-                            } else {
-                                jiraProjects.get({id: $scope.project.id, resource: 'statuses'}).then(
-                                    function (response) {
-                                        $scope.states = response[0].statuses;
-                                        $scope.states.unshift({name:'All'});
-                                        $scope.issueState = $scope.states[0];
-                                    }
-                                )
-                            }
+                    jiraProjects.getStatuses(project.id).then(function(states) {
+                        $scope.states = states;
+                        $scope.issueState = states[0];
+                    });
 
-                        } else {
-                            alert('No projects were found');
-                        }
-                    }
-                );
+                }, function(errorMessage) {
+                    alert(errorMessage);
+                });
 
-                jiraSprintQuery.getSingle({id: projectId}).then(
-                    function(response) {
-                        if (response.sprints) {
-                            activeSprint = _.find(response.sprints, function(item) {
-                               return item.state == 'ACTIVE';
-                            });
-                            if (!activeSprint) {
-                                alert('No active sprints were found for the project.')
-                            } else {
-                                jiraSprints.getSingle({rapidViewId: projectId}).then(
-                                    function(response) {
-                                        $scope.sprint = response;
-                                    }
-                                );
-                            }
-                        } else {
-                            // TO DO: add error handler service
-                            alert('There are no sprints in the project!')
-                        }
-                    }
-                );
-
+                jiraSprints.getCurrentSprintBoard(rapidViewId).then(function(sprint) {
+                    $scope.sprint = sprint;
+                });
             }
 
             /**
@@ -106,39 +71,6 @@ angular.module('jiraScrumTools.dashboard', ['ngRoute'])
                     $scope.achievement = 'success';
                 }
             }
-
-            /**
-             * @description Returns the total number of points for the specified type of issue.
-             * @param {string} status Returns the total number of points for the specified status. If no status is mentioned it returns the total for all issues.
-             * @return {number}
-             */
-            $scope.getTotal = function(status) {
-
-                var total = 0;
-
-                if ($scope.sprint && $scope.sprint.issuesData && $scope.sprint.issuesData.issues) {
-
-                    var issues = $scope.sprint.issuesData.issues;
-
-                    for (var i in issues) {
-                        if (issues[i].estimateStatistic &&
-                            issues[i].estimateStatistic.statFieldValue &&
-                            issues[i].estimateStatistic.statFieldValue.value) {
-
-                            if (status) {
-                                if (issues[i].statusName == status) {
-                                    total += issues[i].estimateStatistic.statFieldValue.value;
-                                }
-                            } else {
-                                total += issues[i].estimateStatistic.statFieldValue.value;
-                            }
-
-                        }
-                    }
-                }
-
-                return total;
-            };
 
             $scope.startTimer = function() {
 
