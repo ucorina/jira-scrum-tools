@@ -22,7 +22,7 @@ angular.module('jiraScrumTools.jira.sprintquery', [])
                 getSingle: function (p) {
                     return res.getSingle(p).$promise;
                 },
-                getActiveSprint: function(projectId) {
+                getSprints: function(projectId) {
                     var deferred = $q.defer();
                     res.getSingle({id: projectId}).$promise.then(
                         function(response) {
@@ -31,9 +31,18 @@ angular.module('jiraScrumTools.jira.sprintquery', [])
                                 return;
                             }
 
-                            var activeSprint = _.find(response.sprints, function(item) {
+                            deferred.resolve(response.sprints);
+                        }
+                    );
+                    return deferred.promise;
+                },
+                getActiveSprint: function(projectId) {
+                    var deferred = $q.defer();
+                    getSprints(projectId).then(function(sprints) {
+                            var activeSprint = _.find(sprints, function(item) {
                                 return item.state == 'ACTIVE';
                             });
+
                             if (!activeSprint) {
                                 deferred.reject('No active sprints were found for the project.');
                                 return;

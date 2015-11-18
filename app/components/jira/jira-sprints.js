@@ -26,6 +26,7 @@ angular.module('jiraScrumTools.jira.sprints', [])
                     var deferred = $q.defer();
                     Resource.getSingle({ rapidViewId: rapidViewId }).$promise.then(
                         function(response) {
+                            if(!response)
                             deferred.resolve(response);
                         }
                     );

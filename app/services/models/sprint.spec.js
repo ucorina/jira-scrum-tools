@@ -36,11 +36,11 @@ describe('jiraScrumTools.models.Sprint', function() {
                     }
                 },
                 "statusId": "10001",
-                "statusName": "Done",
+                "statusName": "Closed",
                 "statusUrl": "https:\/\/jira.spring.io\/images\/icons\/statuses\/closed.png",
                 "status": {
                     "id": "10001",
-                    "name": "Done",
+                    "name": "Closed",
                     "description": "An issue is done",
                     "iconUrl": "https:\/\/jira.spring.io\/images\/icons\/statuses\/closed.png",
                     "statusCategory": {
@@ -115,6 +115,12 @@ describe('jiraScrumTools.models.Sprint', function() {
             var sprint = angular.extend(sprintJson, Sprint);
             expect(sprint.getTotal('Open')).toBe(0)
         }));
+
+        it('should return the percentage of closed tasks based on estimations', inject(function(Sprint) {
+            var sprint = angular.extend(sprintJson, Sprint);
+            expect(sprint.getPercentageCompleted()).toBe(100)
+        }));
+
 
     });
 });

@@ -6,6 +6,6 @@
  */
 app.constant('CONFIG', {
     'BASE_URL': 'https://jira.globalorange.nl/jira/',
-    'USERNAME': '',
-    'PASSWORD': ''
+    'USERNAME': 'corina.udrescu',
+    'PASSWORD': 'arniarules'
 });

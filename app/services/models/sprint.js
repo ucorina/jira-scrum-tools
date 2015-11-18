@@ -33,6 +33,25 @@ angular.module('jiraScrumTools.models', []).
                 }
 
                 return total;
+            },
+
+            getPercentageCompleted: function() {
+                return this.getTotal('Closed') / this.getTotal() * 100;
+            },
+
+            /**
+             * @description Sets the achievement type to that the progress bar can display the right colour
+             */
+            getAchievement: function() {
+                var value = this.getPercentageCompleted();
+
+                if (value < 70) {
+                    return 'danger';
+                } else if (value < 80) {
+                    return 'warning';
+                } else if (value < 90) {
+                    return 'success';
+                }
             }
     };
 });

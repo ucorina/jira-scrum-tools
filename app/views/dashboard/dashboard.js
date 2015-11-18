@@ -24,19 +24,15 @@ angular.module('jiraScrumTools.dashboard', ['ngRoute'])
             $scope.issueType = null;
 
             // TO DO: make this configurable
-            var rapidViewId = 88;
-            var projectName = 'Simpled Cards';
+            var rapidViewId = 3;
+            var projectName = 'Aysist';
             var activeSprint = undefined;
             var timer = null;
 
             // TO DO: move audio into a separate audio component
             $scope.clap = ngAudio.load('sounds/clap.mp3');
 
-            /**
-             * @description Constructor
-             */
-            function init() {
-
+            function initializeDashboard() {
                 $scope.timer = 900;
 
                 jiraIssues.getProject(projectName).then(function(project) {
@@ -51,26 +47,21 @@ angular.module('jiraScrumTools.dashboard', ['ngRoute'])
                 }, function(errorMessage) {
                     alert(errorMessage);
                 });
-
-                jiraSprints.getCurrentSprintBoard(rapidViewId).then(function(sprint) {
-                    $scope.sprint = sprint;
-                });
             }
 
             /**
-             * @description Sets the achievement type to that the progress bar can display the right colour
+             * @description Constructor
              */
-            function setAchievementType() {
-                var value = $scope.getTotal('Closed')/$scope.getTotal() * 100;
+            $scope.displaySprint = function(rapidViewId) {
+                jiraSprintQuery.getSprints(rapidViewId).then(function(sprints) {
+                    $scope.allSprints = sprints;
+                });
 
-                if (value < 70) {
-                    $scope.achievement = 'danger';
-                } else if (value < 80) {
-                    $scope.achievement = 'warning';
-                } else if (value < 90) {
-                    $scope.achievement = 'success';
-                }
-            }
+                jiraSprints.getCurrentSprintBoard(rapidViewId).then(function(sprint) {
+                    $scope.sprint = sprint;
+                    $scope.achievement = sprint.getAchievement();
+                });
+            };
 
             $scope.startTimer = function() {
 
@@ -91,7 +82,7 @@ angular.module('jiraScrumTools.dashboard', ['ngRoute'])
                 $interval.cancel(timer);
             };
 
-            init();
-
+            initializeDashboard();
+            $scope.displaySprint(rapidViewId);
         }
     ]);

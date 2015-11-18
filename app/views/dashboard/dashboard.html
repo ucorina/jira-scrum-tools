@@ -1,3 +1,7 @@
+<h4>Sprint
+    <select ng-model="sprint" ng-options="sprint.name for sprint in allSprints" ng-change="initializeDashboard(sprint.id)"></select>
+</h4>
+
 <div ng-if="sprint" class="row">
     <div class="col-md-6">
         <h5>
